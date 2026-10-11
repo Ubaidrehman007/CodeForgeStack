@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import {
   BrowserRouter,
   Link,
@@ -10,219 +11,460 @@ import "./App.css";
 const articles = [
   {
     id: "java-collections",
-    category: "JAVA",
-    title: "Java Collections Framework: A Practical Guide",
+    title: "Java Collections Framework: A Complete Guide",
     description:
-      "Understand Lists, Sets, Maps, and how to choose the right collection for your application.",
+      "Understand List, Set, Map, Queue and the essential collection classes every Java developer should know.",
+    category: "Java",
+    author: "CodeForge Team",
+    date: "2026-10-12",
     readTime: "8 min read",
-    tag: "Backend",
+    views: 980,
+    tag: "Core Java",
     content: [
       {
-        heading: "What is the Collections Framework?",
-        body: "The Java Collections Framework provides a standard set of interfaces and classes for storing and working with groups of objects. It includes structures such as List, Set, Queue, and Map.",
+        heading: "What is the Java Collections Framework?",
+        text: "The Java Collections Framework provides interfaces and implementations to store, organize and manipulate groups of objects. It helps developers write reusable and maintainable code.",
       },
       {
-        heading: "List, Set, and Map",
-        body: "Use a List when order and indexed access matter. Use a Set when unique elements are important. Use a Map to associate keys with values.",
+        heading: "Important collection interfaces",
+        text: "List maintains an ordered collection, Set stores unique elements, Queue supports processing elements in sequence, and Map stores key-value pairs.",
       },
       {
-        heading: "Choosing the right collection",
-        body: "Consider ordering, uniqueness, lookup speed, and how data will change. ArrayList is a common starting point for lists, HashSet for unique values, and HashMap for key-value lookups.",
+        heading: "Which collection should you use?",
+        text: "Use ArrayList for general-purpose indexed access, HashSet for uniqueness, HashMap for key-value lookups, and ArrayDeque for many queue and stack operations. Choose based on your requirements.",
       },
     ],
   },
   {
     id: "react-components-state",
-    category: "REACT",
     title: "React Components and State Explained",
     description:
-      "Learn how components, props, and state work together to build interactive user interfaces.",
+      "Learn how reusable components, props and state work together to build interactive React applications.",
+    category: "React",
+    author: "CodeForge Team",
+    date: "2026-10-11",
     readTime: "6 min read",
+    views: 1250,
     tag: "Frontend",
     content: [
       {
-        heading: "What are components?",
-        body: "Components are reusable building blocks of a React interface. A component can combine markup, behavior, and styling to represent part of a page.",
+        heading: "Understanding components",
+        text: "React components are reusable building blocks of a user interface. A component can accept data through props and return the UI that React should render.",
       },
       {
-        heading: "Props and state",
-        body: "Props pass information from a parent component to a child. State represents information a component manages over time, such as a selected tab or input value.",
+        heading: "Props versus state",
+        text: "Props are passed into a component by its parent. State represents data managed by a component and can change in response to user interactions.",
       },
       {
-        heading: "Build reusable interfaces",
-        body: "Break interfaces into components with clear responsibilities. Reuse components when their structure or behavior is shared, and keep state close to the components that need it.",
+        heading: "Build interactive interfaces",
+        text: "Use event handlers and state updates to respond to clicks, forms and other user actions. Keep components focused and reusable as your application grows.",
       },
     ],
   },
   {
     id: "spring-boot-rest-api",
-    category: "SPRING BOOT",
-    title: "Build Your First REST API with Spring Boot",
+    title: "Build REST APIs with Spring Boot",
     description:
-      "Explore controllers, services, and the basics of creating a maintainable REST API.",
+      "Explore controllers, services, repositories and the layered architecture behind maintainable Java APIs.",
+    category: "Spring Boot",
+    author: "CodeForge Team",
+    date: "2026-10-10",
     readTime: "10 min read",
+    views: 1560,
     tag: "Backend",
     content: [
       {
         heading: "What is a REST API?",
-        body: "A REST-style API exposes resources through HTTP endpoints. Clients can use methods such as GET, POST, PUT, and DELETE to interact with those resources.",
+        text: "A REST API exposes resources through HTTP endpoints. Clients can use methods such as GET, POST, PUT, PATCH and DELETE to interact with those resources.",
       },
       {
-        heading: "Understand the layers",
-        body: "A controller handles HTTP requests, a service contains business logic, and a repository typically handles persistence. Separating these responsibilities makes an application easier to maintain.",
+        heading: "Structure your Spring Boot application",
+        text: "Controllers handle HTTP requests, services contain business logic, and repositories handle data access. DTOs help define the shape of API requests and responses.",
       },
       {
-        heading: "Test your endpoints",
-        body: "Run the Spring Boot application and test your endpoints using a tool such as Postman. Check status codes, response bodies, validation, and error handling.",
+        heading: "Build reliable endpoints",
+        text: "Validate incoming data, return appropriate HTTP status codes, handle exceptions consistently and protect endpoints that require authentication.",
+      },
+    ],
+  },
+  {
+    id: "sql-database-basics",
+    title: "SQL and Database Fundamentals for Developers",
+    description:
+      "Learn tables, relationships, joins and queries that help you work confidently with relational databases.",
+    category: "Database",
+    author: "CodeForge Team",
+    date: "2026-10-09",
+    readTime: "7 min read",
+    views: 740,
+    tag: "SQL",
+    content: [
+      {
+        heading: "How relational databases work",
+        text: "Relational databases organize structured data into tables containing rows and columns. Primary keys identify records, while foreign keys connect related tables.",
+      },
+      {
+        heading: "Write useful SQL queries",
+        text: "SELECT retrieves data, WHERE filters records, JOIN combines related tables, and GROUP BY supports aggregation. Practice queries using realistic datasets.",
+      },
+      {
+        heading: "Keep your data consistent",
+        text: "Use suitable data types, constraints, indexes and transactions. Good database design improves reliability and makes applications easier to maintain.",
+      },
+    ],
+  },
+  {
+    id: "web-development-roadmap",
+    title: "A Practical Web Development Learning Roadmap",
+    description:
+      "A structured learning path covering HTML, CSS, JavaScript, frontend frameworks and backend fundamentals.",
+    category: "Web Development",
+    author: "CodeForge Team",
+    date: "2026-10-08",
+    readTime: "5 min read",
+    views: 1100,
+    tag: "Roadmap",
+    content: [
+      {
+        heading: "Start with the fundamentals",
+        text: "Learn semantic HTML, responsive CSS and JavaScript fundamentals. Build small projects instead of relying only on tutorials.",
+      },
+      {
+        heading: "Build full-stack projects",
+        text: "Choose a frontend framework and learn how HTTP APIs connect it to a backend. Practice authentication, database operations and validation.",
+      },
+      {
+        heading: "Prepare for real-world development",
+        text: "Use Git, write tests, document your work and deploy projects. A portfolio of finished projects demonstrates practical skills.",
       },
     ],
   },
 ];
 
 const topics = [
-  "Java & Spring Boot",
-  "Frontend Development",
-  "Backend Engineering",
-  "Databases & APIs",
+  "All",
+  "Java",
+  "React",
+  "Spring Boot",
+  "Database",
+  "Web Development",
 ];
 
 function Navbar() {
   return (
     <header className="navbar">
-      <Link to="/" className="brand" aria-label="CodeForge Stack home">
-        <span className="brand-icon">&lt;/&gt;</span>
-        <span>
-          CodeForge<span className="brand-accent">Stack</span>
-        </span>
-      </Link>
+      <div className="nav-inner">
+        <Link className="brand" to="/">
+          <span className="brand-mark">&lt;/&gt;</span>
+          <span>
+            CodeForge<span className="brand-accent">Stack</span>
+          </span>
+        </Link>
 
-      <nav className="nav-links" aria-label="Main navigation">
-        <Link to="/">Home</Link>
-        <Link to="/#articles">Articles</Link>
-        <Link to="/#topics">Topics</Link>
-      </nav>
+        <nav className="nav-links">
+          <Link to="/">Home</Link>
+          <Link to="/#articles">Articles</Link>
+          <Link to="/#topics">Topics</Link>
+        </nav>
 
-      <Link to="/#articles" className="nav-cta">
-        Explore Articles <span>↗</span>
-      </Link>
+        <a className="nav-cta" href="mailto:hello@codeforgestack.dev">
+          Contact <span aria-hidden="true">↗</span>
+        </a>
+      </div>
     </header>
   );
 }
 
 function Footer() {
   return (
-    <footer className="footer" id="about">
-      <Link to="/" className="brand">
-        <span className="brand-icon">&lt;/&gt;</span>
+    <footer className="footer">
+      <Link className="brand footer-brand" to="/">
+        <span className="brand-mark">&lt;/&gt;</span>
         <span>
           CodeForge<span className="brand-accent">Stack</span>
         </span>
       </Link>
-
-      <p>Built for developers who never stop learning.</p>
-
-      <span className="footer-copyright">
+      <p>Built for developers who love to learn and build.</p>
+      <span className="footer-copy">
         © {new Date().getFullYear()} CodeForge Stack
       </span>
     </footer>
   );
 }
 
+function ArticleCard({ article, index }) {
+  return (
+    <article className="article-card" style={{ "--card-index": index }}>
+      <div className="card-topline">
+        <span className="category-badge">{article.category}</span>
+        <span className="read-time">{article.readTime}</span>
+      </div>
+
+      <Link
+        className="card-title"
+        to={`/articles/${article.id}`}
+        aria-label={`Read ${article.title}`}
+      >
+        {article.title}
+      </Link>
+
+      <p className="card-description">{article.description}</p>
+
+      <div className="card-meta">
+        <span>{article.author}</span>
+        <span>
+          {new Date(`${article.date}T00:00:00`).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+        </span>
+      </div>
+
+      <Link className="read-link" to={`/articles/${article.id}`}>
+        Read article <span aria-hidden="true">↗</span>
+      </Link>
+    </article>
+  );
+}
+
 function HomePage() {
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("latest");
+
+  const filteredArticles = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return articles
+      .filter((article) => {
+        const matchesCategory =
+          activeCategory === "All" || article.category === activeCategory;
+
+        const searchableText = [
+          article.title,
+          article.description,
+          article.category,
+          article.tag,
+          article.author,
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        return matchesCategory && searchableText.includes(query);
+      })
+      .sort((a, b) => {
+        if (sortBy === "popular") return b.views - a.views;
+        if (sortBy === "oldest") return a.date.localeCompare(b.date);
+        return b.date.localeCompare(a.date);
+      });
+  }, [search, activeCategory, sortBy]);
+
+  function clearFilters() {
+    setSearch("");
+    setActiveCategory("All");
+    setSortBy("latest");
+  }
+
   return (
     <>
-      <section className="hero" id="home">
-        <div className="hero-badge">
-          <span className="status-dot" />A community for developers
+      <section className="hero">
+        <div className="hero-glow" />
+        <div className="hero-content">
+          <div className="eyebrow">
+            <span className="status-dot" />A BLOG FOR BUILDERS
+          </div>
+
+          <h1>
+            Ideas into code.
+            <br />
+            <span>Code into impact.</span>
+          </h1>
+
+          <p className="hero-description">
+            Practical tutorials, engineering insights and developer guides to
+            help you build better software, one line at a time.
+          </p>
+
+          <div className="hero-actions">
+            <a className="button-primary" href="#articles">
+              Explore articles <span aria-hidden="true">↓</span>
+            </a>
+            <a className="button-secondary" href="#topics">
+              Browse topics
+            </a>
+          </div>
+
+          <div className="hero-stats">
+            <div>
+              <strong>{articles.length.toString().padStart(2, "0")}+</strong>
+              <span>Sample articles</span>
+            </div>
+            <div className="stat-divider" />
+            <div>
+              <strong>{topics.length - 1}</strong>
+              <span>Tech topics</span>
+            </div>
+            <div className="stat-divider" />
+            <div>
+              <strong>100%</strong>
+              <span>Developer focused</span>
+            </div>
+          </div>
         </div>
 
-        <h1>
-          Build better.
-          <br />
-          <span>Code smarter.</span>
-        </h1>
-
-        <p className="hero-description">
-          Practical tutorials, engineering insights, and developer resources to
-          help you build skills that matter.
-        </p>
-
-        <div className="hero-actions">
-          <a href="#articles" className="button-primary">
-            Explore Articles <span>↗</span>
-          </a>
-          <a href="#topics" className="button-secondary">
-            Discover Topics
-          </a>
-        </div>
-
-        <div className="hero-note" aria-label="Featured technologies">
-          <span>Java</span>
-          <span>React</span>
-          <span>Spring Boot</span>
-          <span>Web Development</span>
+        <div className="hero-decoration" aria-hidden="true">
+          <span className="decoration-bracket">{"{"}</span>
+          <span className="decoration-code">learn();</span>
+          <span className="decoration-code">build();</span>
+          <span className="decoration-code">repeat();</span>
+          <span className="decoration-bracket">{"}"}</span>
         </div>
       </section>
 
-      <section className="articles-section" id="articles">
+      <section className="articles-section section-container" id="articles">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">THE KNOWLEDGE HUB</p>
+            <span className="section-kicker">THE KNOWLEDGE HUB</span>
             <h2>
-              Explore the Stack<span>.</span>
+              Explore articles<span className="heading-dot">.</span>
             </h2>
+            <p>Find practical knowledge for your next build.</p>
           </div>
-
-          <p className="section-description">
-            Learn something new. Build something meaningful.
-          </p>
+          <span className="article-count">
+            {filteredArticles.length}{" "}
+            {filteredArticles.length === 1 ? "article" : "articles"}
+          </span>
         </div>
 
-        <div className="article-grid">
-          {articles.map((article) => (
-            <article className="article-card" key={article.id}>
-              <div className="article-card-top">
-                <span className="article-category">{article.category}</span>
-                <span className="article-arrow" aria-hidden="true">
-                  ↗
-                </span>
-              </div>
-
-              <div className="article-card-content">
-                <span className="article-tag">{article.tag}</span>
-                <h3>{article.title}</h3>
-                <p>{article.description}</p>
-              </div>
-
-              <div className="article-card-footer">
-                <span>Sample article</span>
-                <span>{article.readTime}</span>
-              </div>
-
-              <Link
-                className="article-read-link"
-                to={`/articles/${article.id}`}
-                aria-label={`Read ${article.title}`}
+        <div className="discovery-panel">
+          <label className="search-box">
+            <span className="search-icon" aria-hidden="true">
+              ⌕
+            </span>
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search articles, topics or keywords..."
+              aria-label="Search articles"
+            />
+            {search && (
+              <button
+                type="button"
+                className="clear-search"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
               >
-                Read article <span>→</span>
-              </Link>
-            </article>
+                ×
+              </button>
+            )}
+          </label>
+
+          <label className="sort-control">
+            <span>Sort by</span>
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
+              aria-label="Sort articles"
+            >
+              <option value="latest">Latest</option>
+              <option value="oldest">Oldest</option>
+              <option value="popular">Most popular</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="category-filters" aria-label="Filter by category">
+          {topics.map((topic) => (
+            <button
+              key={topic}
+              type="button"
+              className={`filter-chip ${
+                activeCategory === topic ? "active" : ""
+              }`}
+              onClick={() => setActiveCategory(topic)}
+              aria-pressed={activeCategory === topic}
+            >
+              {topic}
+            </button>
           ))}
         </div>
+
+        {filteredArticles.length > 0 ? (
+          <div className="articles-grid">
+            {filteredArticles.map((article, index) => (
+              <ArticleCard key={article.id} article={article} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <span className="empty-icon" aria-hidden="true">
+              ⌕
+            </span>
+            <h3>No articles found</h3>
+            <p>
+              Try another keyword or select a different category to find what
+              you are looking for.
+            </p>
+            <button
+              type="button"
+              className="button-primary"
+              onClick={clearFilters}
+            >
+              Clear all filters
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="topics-section" id="topics">
-        <p className="eyebrow">WHAT YOU CAN EXPLORE</p>
-        <h2>Learn by building.</h2>
-
-        <div className="topic-list">
-          {topics.map((topic) => (
-            <div className="topic-item" key={topic}>
-              <span className="topic-symbol">&lt;/&gt;</span>
-              <span>{topic}</span>
-              <span className="topic-arrow">↗</span>
+        <div className="section-container">
+          <div className="section-heading">
+            <div>
+              <span className="section-kicker">PICK YOUR STACK</span>
+              <h2>
+                Browse by topic<span className="heading-dot">.</span>
+              </h2>
+              <p>Choose a topic and discover something new.</p>
             </div>
-          ))}
+          </div>
+
+          <div className="topics-grid">
+            {topics
+              .filter((topic) => topic !== "All")
+              .map((topic, index) => {
+                const count = articles.filter(
+                  (article) => article.category === topic,
+                ).length;
+
+                return (
+                  <button
+                    type="button"
+                    className="topic-card"
+                    key={topic}
+                    onClick={() => {
+                      setActiveCategory(topic);
+                      setSearch("");
+                      document
+                        .getElementById("articles")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    <span className="topic-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="topic-name">{topic}</span>
+                    <span className="topic-count">
+                      {count} {count === 1 ? "article" : "articles"}
+                    </span>
+                    <span className="topic-arrow" aria-hidden="true">
+                      ↗
+                    </span>
+                  </button>
+                );
+              })}
+          </div>
         </div>
       </section>
     </>
@@ -235,14 +477,14 @@ function ArticlePage() {
 
   if (!article) {
     return (
-      <main className="article-page">
-        <p className="eyebrow">404 — ARTICLE NOT FOUND</p>
-        <h1>We couldn't find that article.</h1>
-        <p className="article-intro">
-          The article may have moved, or the URL may be incorrect.
-        </p>
+      <main className="not-found">
+        <span className="section-kicker">404 — ARTICLE NOT FOUND</span>
+        <h1>
+          This page doesn't exist<span className="heading-dot">.</span>
+        </h1>
+        <p>The article may have been moved or the URL may be incorrect.</p>
         <Link className="button-primary" to="/">
-          Back to home
+          Back to articles
         </Link>
       </main>
     );
@@ -250,72 +492,82 @@ function ArticlePage() {
 
   return (
     <main className="article-page">
-      <Link to="/" className="back-link">
-        ← Back to home
+      <Link className="back-link" to="/#articles">
+        ← Back to articles
       </Link>
 
-      <div className="article-page-header">
-        <span className="article-category">{article.category}</span>
-        <span className="article-tag">{article.tag}</span>
-      </div>
-
-      <h1>{article.title}</h1>
-      <p className="article-intro">{article.description}</p>
-
-      <div className="article-meta">
-        <span>{article.readTime}</span>
-        <span>CodeForge Stack Editorial</span>
-        <span>Sample content</span>
+      <div className="article-header">
+        <span className="category-badge">{article.category}</span>
+        <h1>{article.title}</h1>
+        <p className="article-intro">{article.description}</p>
+        <div className="article-meta">
+          <span>{article.author}</span>
+          <span>
+            {new Date(`${article.date}T00:00:00`).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </span>
+          <span>{article.readTime}</span>
+        </div>
       </div>
 
       <div className="article-body">
-        <p>{article.description}</p>
+        <div className="article-notice">
+          <span className="status-dot" />
+          Sample article · Full blog publishing will be added in a later module.
+        </div>
 
-        {article.content.map((section) => (
+        {article.content.map((section, index) => (
           <section key={section.heading}>
-            <h2>{section.heading}</h2>
-            <p>{section.body}</p>
+            <h2>
+              {index + 1}. {section.heading}
+            </h2>
+            <p>{section.text}</p>
           </section>
         ))}
-      </div>
 
-      <div className="article-end">
-        <p>Keep learning. Keep building.</p>
-        <Link to="/" className="button-secondary">
-          Explore more articles
-        </Link>
+        <div className="article-end">
+          <span>Enjoyed this guide?</span>
+          <Link to="/#articles">Explore more articles ↗</Link>
+        </div>
       </div>
     </main>
   );
 }
 
-function App() {
+function NotFoundPage() {
   return (
-    <BrowserRouter>
-      <div className="app">
-        <Navbar />
-
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/articles/:articleId" element={<ArticlePage />} />
-          <Route
-            path="*"
-            element={
-              <main className="article-page">
-                <p className="eyebrow">404 — PAGE NOT FOUND</p>
-                <h1>This page doesn't exist.</h1>
-                <Link className="button-primary" to="/">
-                  Back to home
-                </Link>
-              </main>
-            }
-          />
-        </Routes>
-
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <main className="not-found">
+      <span className="section-kicker">404 — PAGE NOT FOUND</span>
+      <h1>Lost in the code?</h1>
+      <p>Let's get you back to the knowledge hub.</p>
+      <Link className="button-primary" to="/">
+        Back to home
+      </Link>
+    </main>
   );
 }
 
-export default App;
+function AppLayout() {
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/articles/:articleId" element={<ArticlePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+      <Footer />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
+  );
+}
