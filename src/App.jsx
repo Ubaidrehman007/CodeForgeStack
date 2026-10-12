@@ -490,38 +490,71 @@ function HomePage({ articles }) {
   );
 }
 
+function getHeadingId(text) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
+
 function ArticlePage({ articles }) {
   const { articleId } = useParams();
+  const [progress, setProgress] = useState(0);
+  const [copyStatus, setCopyStatus] = useState("");
 
   const article = articles.find(
     (item) => item.id === articleId && item.status === "published",
   );
 
+  const lines = (article?.content || "").split("\n");
+
+  const headings = lines
+    .filter((line) => /^#{1,3}\s+/.test(line.trim()))
+    .map((line) => {
+      const match = line.trim().match(/^(#{1,3})\s+(.+)$/);
+      return {
+        level: match[1].length,
+        text: match[2].trim(),
+        id: getHeadingId(match[2]),
+      };
+    });
+
   useEffect(() => {
-    if (!article) return;
+    function updateProgress() {
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
 
-    document.title = article.seoTitle || article.title;
-    const description = article.seoDescription || article.description;
-    let meta = document.querySelector('meta[name="description"]');
+      const next = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
 
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.name = "description";
-      document.head.appendChild(meta);
+      setProgress(Math.min(100, Math.max(0, next)));
     }
 
-    meta.content = description;
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
 
     return () => {
-      document.title = "CodeForge Stack | Developer Blog";
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
     };
-  }, [article]);
+  }, [articleId]);
+
+  async function copyCode(code, key) {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopyStatus(key);
+      window.setTimeout(() => setCopyStatus(""), 1800);
+    } catch {
+      setCopyStatus("");
+      window.alert("Copy failed. Please select and copy the code manually.");
+    }
+  }
 
   if (!article) {
     return (
       <main className="not-found">
         <h1>Article not found.</h1>
-        <p>This article may have been removed or is not published.</p>
         <Link className="button-primary" to="/">
           Back home
         </Link>
@@ -529,39 +562,239 @@ function ArticlePage({ articles }) {
     );
   }
 
+  const contentBlocks = [];
+  let paragraphLines = [];
+  let codeLines = [];
+  let insideCode = false;
+  let codeLanguage = "";
+  let codeIndex = 0;
+
+  function flushParagraph() {
+    if (paragraphLines.length) {
+      contentBlocks.push({
+        type: "paragraph",
+        text: paragraphLines.join(" "),
+      });
+      paragraphLines = [];
+    }
+  }
+
+  lines.forEach((rawLine) => {
+    const line = rawLine.trim();
+
+    if (line.startsWith("```")) {
+      flushParagraph();
+
+      if (!insideCode) {
+        insideCode = true;
+        codeLanguage = line.slice(3).trim() || "code";
+        codeLines = [];
+      } else {
+        contentBlocks.push({
+          type: "code",
+          language: codeLanguage,
+          code: codeLines.join("\n"),
+          key: `code-${codeIndex++}`,
+        });
+        insideCode = false;
+      }
+
+      return;
+    }
+
+    if (insideCode) {
+      codeLines.push(rawLine);
+      return;
+    }
+
+    if (!line) {
+      flushParagraph();
+      return;
+    }
+
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+
+    if (headingMatch) {
+      flushParagraph();
+      contentBlocks.push({
+        type: "heading",
+        level: headingMatch[1].length,
+        text: headingMatch[2].trim(),
+        id: getHeadingId(headingMatch[2]),
+      });
+      return;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      flushParagraph();
+      contentBlocks.push({
+        type: "list-item",
+        text: line.replace(/^[-*]\s+/, ""),
+      });
+      return;
+    }
+
+    if (/^\d+\.\s+/.test(line)) {
+      flushParagraph();
+      contentBlocks.push({
+        type: "ordered-item",
+        text: line.replace(/^\d+\.\s+/, ""),
+      });
+      return;
+    }
+
+    paragraphLines.push(line);
+  });
+
+  if (insideCode) {
+    contentBlocks.push({
+      type: "code",
+      language: codeLanguage,
+      code: codeLines.join("\n"),
+      key: `code-${codeIndex++}`,
+    });
+  }
+
+  flushParagraph();
+
+  const renderedBlocks = [];
+  let listItems = [];
+  let orderedItems = [];
+
+  function flushLists() {
+    if (listItems.length) {
+      renderedBlocks.push(
+        <ul key={`ul-${renderedBlocks.length}`}>
+          {listItems.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>,
+      );
+      listItems = [];
+    }
+
+    if (orderedItems.length) {
+      renderedBlocks.push(
+        <ol key={`ol-${renderedBlocks.length}`}>
+          {orderedItems.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ol>,
+      );
+      orderedItems = [];
+    }
+  }
+
+  contentBlocks.forEach((block) => {
+    if (block.type === "list-item") {
+      if (orderedItems.length) flushLists();
+      listItems.push(block.text);
+      return;
+    }
+
+    if (block.type === "ordered-item") {
+      if (listItems.length) flushLists();
+      orderedItems.push(block.text);
+      return;
+    }
+
+    flushLists();
+
+    if (block.type === "heading") {
+      const HeadingTag = `h${block.level}`;
+
+      renderedBlocks.push(
+        <HeadingTag id={block.id} key={block.id}>
+          {block.text}
+        </HeadingTag>,
+      );
+    } else if (block.type === "paragraph") {
+      renderedBlocks.push(
+        <p key={`p-${renderedBlocks.length}`}>{block.text}</p>,
+      );
+    } else if (block.type === "code") {
+      renderedBlocks.push(
+        <div className="article-code-block" key={block.key}>
+          <div className="article-code-toolbar">
+            <span>{block.language}</span>
+            <button
+              type="button"
+              onClick={() => copyCode(block.code, block.key)}
+              aria-label="Copy code example"
+            >
+              {copyStatus === block.key ? "Copied ✓" : "Copy code"}
+            </button>
+          </div>
+          <pre>
+            <code>{block.code}</code>
+          </pre>
+        </div>,
+      );
+    }
+  });
+
+  flushLists();
+
   return (
-    <main className="article-page">
-      <nav aria-label="Breadcrumb" className="article-breadcrumb">
-        <Link to="/">Home</Link>
-        <span aria-hidden="true">/</span>
-        <Link to="/#articles">Articles</Link>
-        <span aria-hidden="true">/</span>
-        <span>{article.category}</span>
-      </nav>
-
-      <Link className="back-link" to="/#articles">
-        ← Back to articles
-      </Link>
-
-      <header className="article-header">
-        <span className="category-badge">{article.category}</span>
-        <h1>{article.title}</h1>
-        <p className="article-intro">{article.description}</p>
-
-        <div className="article-meta">
-          <span>{article.author}</span>
-          <time dateTime={article.date}>{article.date}</time>
-          <span>{article.readTime}</span>
-        </div>
-      </header>
-
-      <ArticleContent content={article.content} />
-
-      <div className="article-end">
-        <span>Enjoyed this guide? Explore more developer articles.</span>
-        <Link to="/#articles">Explore articles ↗</Link>
+    <>
+      <div
+        className="article-reading-progress"
+        role="progressbar"
+        aria-label="Article reading progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress)}
+      >
+        <span style={{ width: `${progress}%` }} />
       </div>
-    </main>
+
+      <main className="article-page article-page-enhanced">
+        <Link className="back-link" to="/#articles">
+          ← Back to articles
+        </Link>
+
+        <header className="article-header">
+          <span className="category-badge">{article.category}</span>
+          <h1>{article.title}</h1>
+          <p className="article-intro">{article.description}</p>
+
+          <div className="article-meta">
+            <span>{article.author}</span>
+            <span>{article.date}</span>
+            <span>{article.readTime}</span>
+          </div>
+        </header>
+
+        <div className="article-reading-layout">
+          {headings.length > 0 && (
+            <aside className="article-toc">
+              <h2>On this page</h2>
+              <nav aria-label="Table of contents">
+                {headings.map((heading) => (
+                  <a
+                    key={heading.id}
+                    className={`toc-level-${heading.level}`}
+                    href={`#${heading.id}`}
+                  >
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            </aside>
+          )}
+
+          <article className="article-body article-body-enhanced">
+            {renderedBlocks}
+          </article>
+        </div>
+
+        <div className="article-end-note">
+          <span className="brand-mark">&lt;/&gt;</span>
+          <p>You’ve reached the end. Keep learning, building, and sharing.</p>
+          <Link to="/#articles">Explore more articles ↗</Link>
+        </div>
+      </main>
+    </>
   );
 }
 
