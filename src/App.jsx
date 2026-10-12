@@ -1,175 +1,246 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BrowserRouter,
   Link,
   Route,
   Routes,
+  useNavigate,
   useParams,
 } from "react-router-dom";
 import "./App.css";
 
-const articles = [
-  {
-    id: "java-collections",
-    title: "Java Collections Framework: A Complete Guide",
-    description:
-      "Understand List, Set, Map, Queue and the essential collection classes every Java developer should know.",
-    category: "Java",
-    author: "CodeForge Team",
-    date: "2026-10-12",
-    readTime: "8 min read",
-    views: 980,
-    tag: "Core Java",
-    content: [
-      {
-        heading: "What is the Java Collections Framework?",
-        text: "The Java Collections Framework provides interfaces and implementations to store, organize and manipulate groups of objects. It helps developers write reusable and maintainable code.",
-      },
-      {
-        heading: "Important collection interfaces",
-        text: "List maintains an ordered collection, Set stores unique elements, Queue supports processing elements in sequence, and Map stores key-value pairs.",
-      },
-      {
-        heading: "Which collection should you use?",
-        text: "Use ArrayList for general-purpose indexed access, HashSet for uniqueness, HashMap for key-value lookups, and ArrayDeque for many queue and stack operations. Choose based on your requirements.",
-      },
-    ],
-  },
-  {
-    id: "react-components-state",
-    title: "React Components and State Explained",
-    description:
-      "Learn how reusable components, props and state work together to build interactive React applications.",
-    category: "React",
-    author: "CodeForge Team",
-    date: "2026-10-11",
-    readTime: "6 min read",
-    views: 1250,
-    tag: "Frontend",
-    content: [
-      {
-        heading: "Understanding components",
-        text: "React components are reusable building blocks of a user interface. A component can accept data through props and return the UI that React should render.",
-      },
-      {
-        heading: "Props versus state",
-        text: "Props are passed into a component by its parent. State represents data managed by a component and can change in response to user interactions.",
-      },
-      {
-        heading: "Build interactive interfaces",
-        text: "Use event handlers and state updates to respond to clicks, forms and other user actions. Keep components focused and reusable as your application grows.",
-      },
-    ],
-  },
-  {
-    id: "spring-boot-rest-api",
-    title: "Build REST APIs with Spring Boot",
-    description:
-      "Explore controllers, services, repositories and the layered architecture behind maintainable Java APIs.",
-    category: "Spring Boot",
-    author: "CodeForge Team",
-    date: "2026-10-10",
-    readTime: "10 min read",
-    views: 1560,
-    tag: "Backend",
-    content: [
-      {
-        heading: "What is a REST API?",
-        text: "A REST API exposes resources through HTTP endpoints. Clients can use methods such as GET, POST, PUT, PATCH and DELETE to interact with those resources.",
-      },
-      {
-        heading: "Structure your Spring Boot application",
-        text: "Controllers handle HTTP requests, services contain business logic, and repositories handle data access. DTOs help define the shape of API requests and responses.",
-      },
-      {
-        heading: "Build reliable endpoints",
-        text: "Validate incoming data, return appropriate HTTP status codes, handle exceptions consistently and protect endpoints that require authentication.",
-      },
-    ],
-  },
-  {
-    id: "sql-database-basics",
-    title: "SQL and Database Fundamentals for Developers",
-    description:
-      "Learn tables, relationships, joins and queries that help you work confidently with relational databases.",
-    category: "Database",
-    author: "CodeForge Team",
-    date: "2026-10-09",
-    readTime: "7 min read",
-    views: 740,
-    tag: "SQL",
-    content: [
-      {
-        heading: "How relational databases work",
-        text: "Relational databases organize structured data into tables containing rows and columns. Primary keys identify records, while foreign keys connect related tables.",
-      },
-      {
-        heading: "Write useful SQL queries",
-        text: "SELECT retrieves data, WHERE filters records, JOIN combines related tables, and GROUP BY supports aggregation. Practice queries using realistic datasets.",
-      },
-      {
-        heading: "Keep your data consistent",
-        text: "Use suitable data types, constraints, indexes and transactions. Good database design improves reliability and makes applications easier to maintain.",
-      },
-    ],
-  },
-  {
-    id: "web-development-roadmap",
-    title: "A Practical Web Development Learning Roadmap",
-    description:
-      "A structured learning path covering HTML, CSS, JavaScript, frontend frameworks and backend fundamentals.",
-    category: "Web Development",
-    author: "CodeForge Team",
-    date: "2026-10-08",
-    readTime: "5 min read",
-    views: 1100,
-    tag: "Roadmap",
-    content: [
-      {
-        heading: "Start with the fundamentals",
-        text: "Learn semantic HTML, responsive CSS and JavaScript fundamentals. Build small projects instead of relying only on tutorials.",
-      },
-      {
-        heading: "Build full-stack projects",
-        text: "Choose a frontend framework and learn how HTTP APIs connect it to a backend. Practice authentication, database operations and validation.",
-      },
-      {
-        heading: "Prepare for real-world development",
-        text: "Use Git, write tests, document your work and deploy projects. A portfolio of finished projects demonstrates practical skills.",
-      },
-    ],
-  },
-];
+const STORAGE_KEY = "codeforge-articles";
 
-const topics = [
-  "All",
+const categories = [
   "Java",
   "React",
   "Spring Boot",
   "Database",
   "Web Development",
+  "DevOps",
+  "AI & Machine Learning",
+  "Other",
 ];
+
+const starterArticles = [
+  {
+    id: "java-collections",
+    title: "Java Collections Framework: A Complete Guide",
+    description:
+      "Understand List, Set, Map and the essential collection classes every Java developer should know.",
+    category: "Java",
+    author: "CodeForge Team",
+    date: "2026-10-12",
+    readTime: "8 min read",
+    views: 980,
+    status: "published",
+    seoTitle: "Java Collections Framework: Complete Guide",
+    seoDescription:
+      "Learn Java List, Set, Map, ArrayList, HashSet and HashMap with practical explanations.",
+    content:
+      "The Java Collections Framework provides reusable interfaces and implementations to store and manipulate groups of objects.\n\n## Understand the main interfaces\n\nList maintains an ordered collection, Set stores unique elements, Queue supports sequential processing, and Map stores key-value pairs.\n\n## Choose the right collection\n\nUse ArrayList for indexed access, HashSet for uniqueness and HashMap for key-value lookups. Choose collections based on your application's requirements.",
+  },
+  {
+    id: "react-components-state",
+    title: "React Components and State Explained",
+    description:
+      "Learn how reusable components, props and state work together in interactive applications.",
+    category: "React",
+    author: "CodeForge Team",
+    date: "2026-10-11",
+    readTime: "6 min read",
+    views: 1250,
+    status: "published",
+    seoTitle: "React Components and State Explained",
+    seoDescription:
+      "Understand React components, props, state and event handlers in this beginner-friendly guide.",
+    content:
+      "React components are reusable building blocks of a user interface.\n\n## Props and state\n\nProps pass data between components. State stores information that can change as users interact with an application.\n\n## Build interactive interfaces\n\nUse event handlers and state updates to build interactive interfaces. Keep components focused, reusable and easy to maintain.",
+  },
+  {
+    id: "spring-boot-rest-api",
+    title: "Build REST APIs with Spring Boot",
+    description:
+      "Explore controllers, services, repositories and maintainable Java API architecture.",
+    category: "Spring Boot",
+    author: "CodeForge Team",
+    date: "2026-10-10",
+    readTime: "10 min read",
+    views: 1560,
+    status: "published",
+    seoTitle: "Build REST APIs with Spring Boot",
+    seoDescription:
+      "Learn controllers, services, repositories, HTTP methods and REST API best practices in Spring Boot.",
+    content:
+      "A REST API exposes resources through HTTP endpoints. Clients can use GET, POST, PUT, PATCH and DELETE to interact with those resources.\n\n## Layered architecture\n\nIn Spring Boot, controllers handle HTTP requests, services contain business logic and repositories manage data access.\n\n## Build reliable APIs\n\nValidate input, return appropriate status codes and handle exceptions consistently to build reliable APIs.",
+  },
+  {
+    id: "sql-database-basics",
+    title: "SQL and Database Fundamentals",
+    description:
+      "Learn tables, relationships, joins and queries for relational databases.",
+    category: "Database",
+    author: "CodeForge Team",
+    date: "2026-10-09",
+    readTime: "7 min read",
+    views: 740,
+    status: "published",
+    seoTitle: "SQL and Database Fundamentals",
+    seoDescription:
+      "Learn SQL queries, joins, primary keys, foreign keys, indexes and relational database basics.",
+    content:
+      "Relational databases organize structured data into tables. Primary keys identify records, while foreign keys connect related tables.\n\n## Essential SQL commands\n\nSELECT retrieves data, WHERE filters records, JOIN combines tables and GROUP BY supports aggregation.\n\nGood data types, constraints, indexes and transactions help keep data consistent.",
+  },
+  {
+    id: "web-development-roadmap",
+    title: "A Practical Web Development Roadmap",
+    description:
+      "A learning path covering HTML, CSS, JavaScript, frontend frameworks and backend development.",
+    category: "Web Development",
+    author: "CodeForge Team",
+    date: "2026-10-08",
+    readTime: "5 min read",
+    views: 1100,
+    status: "published",
+    seoTitle: "Web Development Roadmap for Beginners",
+    seoDescription:
+      "Explore a practical web development learning path from HTML and CSS to backend APIs and deployment.",
+    content:
+      "Learn semantic HTML, responsive CSS and JavaScript fundamentals. Build small projects instead of relying only on tutorials.\n\nChoose a frontend framework and learn how HTTP APIs connect it to a backend. Practice authentication, database operations and validation.\n\nUse Git, write tests, document your work and deploy projects to demonstrate practical skills.",
+  },
+];
+
+function makeSlug(value = "") {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 100);
+}
+
+function countWords(value = "") {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
+}
+
+function estimateReadTime(value = "") {
+  return `${Math.max(1, Math.ceil(countWords(value) / 200))} min read`;
+}
+
+function readArticles() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return starterArticles;
+
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : starterArticles;
+  } catch {
+    return starterArticles;
+  }
+}
+
+/* A small safe text renderer for headings, paragraphs and fenced code.
+   Raw HTML is never injected into the page. */
+function ArticleContent({ content = "" }) {
+  const lines = content.split("\n");
+  const blocks = [];
+  let paragraph = [];
+  let codeLines = [];
+  let inCode = false;
+
+  function flushParagraph() {
+    if (paragraph.length) {
+      blocks.push({
+        type: "paragraph",
+        text: paragraph.join(" "),
+      });
+      paragraph = [];
+    }
+  }
+
+  lines.forEach((line) => {
+    if (line.trim().startsWith("```")) {
+      if (inCode) {
+        blocks.push({ type: "code", text: codeLines.join("\n") });
+        codeLines = [];
+        inCode = false;
+      } else {
+        flushParagraph();
+        inCode = true;
+      }
+      return;
+    }
+
+    if (inCode) {
+      codeLines.push(line);
+      return;
+    }
+
+    if (!line.trim()) {
+      flushParagraph();
+      return;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      flushParagraph();
+      blocks.push({
+        type: `h${heading[1].length}`,
+        text: heading[2],
+      });
+      return;
+    }
+
+    paragraph.push(line.trim());
+  });
+
+  flushParagraph();
+
+  if (inCode) {
+    blocks.push({ type: "code", text: codeLines.join("\n") });
+  }
+
+  return (
+    <div className="article-body">
+      {blocks.map((block, index) => {
+        if (block.type === "code") {
+          return (
+            <pre className="article-code" key={index}>
+              <code>{block.text}</code>
+            </pre>
+          );
+        }
+
+        if (block.type === "h1") return <h2 key={index}>{block.text}</h2>;
+        if (block.type === "h2") return <h2 key={index}>{block.text}</h2>;
+        if (block.type === "h3") return <h3 key={index}>{block.text}</h3>;
+
+        return <p key={index}>{block.text}</p>;
+      })}
+    </div>
+  );
+}
 
 function Navbar() {
   return (
     <header className="navbar">
       <div className="nav-inner">
-        <Link className="brand" to="/">
+        <Link className="brand" to="/" aria-label="CodeForge Stack home">
           <span className="brand-mark">&lt;/&gt;</span>
           <span>
             CodeForge<span className="brand-accent">Stack</span>
           </span>
         </Link>
 
-        <nav className="nav-links">
+        <nav className="nav-links" aria-label="Main navigation">
           <Link to="/">Home</Link>
           <Link to="/#articles">Articles</Link>
-          <Link to="/#topics">Topics</Link>
+          <Link to="/admin">Admin</Link>
         </nav>
 
-        <a className="nav-cta" href="mailto:hello@codeforgestack.dev">
-          Contact <span aria-hidden="true">↗</span>
-        </a>
+        <Link className="nav-cta" to="/admin/new">
+          Write a blog ↗
+        </Link>
       </div>
     </header>
   );
@@ -192,19 +263,15 @@ function Footer() {
   );
 }
 
-function ArticleCard({ article, index }) {
+function ArticleCard({ article }) {
   return (
-    <article className="article-card" style={{ "--card-index": index }}>
+    <article className="article-card">
       <div className="card-topline">
         <span className="category-badge">{article.category}</span>
         <span className="read-time">{article.readTime}</span>
       </div>
 
-      <Link
-        className="card-title"
-        to={`/articles/${article.id}`}
-        aria-label={`Read ${article.title}`}
-      >
+      <Link className="card-title" to={`/articles/${article.id}`}>
         {article.title}
       </Link>
 
@@ -212,67 +279,52 @@ function ArticleCard({ article, index }) {
 
       <div className="card-meta">
         <span>{article.author}</span>
-        <span>
-          {new Date(`${article.date}T00:00:00`).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
+        <time dateTime={article.date}>{article.date}</time>
       </div>
 
       <Link className="read-link" to={`/articles/${article.id}`}>
-        Read article <span aria-hidden="true">↗</span>
+        Read article ↗
       </Link>
     </article>
   );
 }
 
-function HomePage() {
+function HomePage({ articles }) {
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("latest");
+  const [category, setCategory] = useState("All");
+  const [sort, setSort] = useState("latest");
 
-  const filteredArticles = useMemo(() => {
+  const visibleArticles = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     return articles
-      .filter((article) => {
-        const matchesCategory =
-          activeCategory === "All" || article.category === activeCategory;
-
-        const searchableText = [
-          article.title,
-          article.description,
-          article.category,
-          article.tag,
-          article.author,
-        ]
+      .filter((article) => article.status === "published")
+      .filter((article) => category === "All" || article.category === category)
+      .filter((article) =>
+        [article.title, article.description, article.category, article.content]
           .join(" ")
-          .toLowerCase();
-
-        return matchesCategory && searchableText.includes(query);
-      })
+          .toLowerCase()
+          .includes(query),
+      )
       .sort((a, b) => {
-        if (sortBy === "popular") return b.views - a.views;
-        if (sortBy === "oldest") return a.date.localeCompare(b.date);
+        if (sort === "popular") return (b.views || 0) - (a.views || 0);
+        if (sort === "oldest") return a.date.localeCompare(b.date);
         return b.date.localeCompare(a.date);
       });
-  }, [search, activeCategory, sortBy]);
+  }, [articles, search, category, sort]);
 
   function clearFilters() {
     setSearch("");
-    setActiveCategory("All");
-    setSortBy("latest");
+    setCategory("All");
+    setSort("latest");
   }
 
   return (
     <>
       <section className="hero">
-        <div className="hero-glow" />
         <div className="hero-content">
           <div className="eyebrow">
-            <span className="status-dot" />A BLOG FOR BUILDERS
+            <span className="status-dot" /> A BLOG FOR BUILDERS
           </div>
 
           <h1>
@@ -288,37 +340,26 @@ function HomePage() {
 
           <div className="hero-actions">
             <a className="button-primary" href="#articles">
-              Explore articles <span aria-hidden="true">↓</span>
+              Explore articles ↓
             </a>
-            <a className="button-secondary" href="#topics">
-              Browse topics
-            </a>
+            <Link className="button-secondary" to="/admin/new">
+              Write a blog
+            </Link>
           </div>
 
           <div className="hero-stats">
             <div>
-              <strong>{articles.length.toString().padStart(2, "0")}+</strong>
-              <span>Sample articles</span>
+              <strong>
+                {articles.filter((a) => a.status === "published").length}
+              </strong>
+              <span>Published articles</span>
             </div>
             <div className="stat-divider" />
             <div>
-              <strong>{topics.length - 1}</strong>
-              <span>Tech topics</span>
-            </div>
-            <div className="stat-divider" />
-            <div>
-              <strong>100%</strong>
-              <span>Developer focused</span>
+              <strong>{categories.length}</strong>
+              <span>Tech categories</span>
             </div>
           </div>
-        </div>
-
-        <div className="hero-decoration" aria-hidden="true">
-          <span className="decoration-bracket">{"{"}</span>
-          <span className="decoration-code">learn();</span>
-          <span className="decoration-code">build();</span>
-          <span className="decoration-code">repeat();</span>
-          <span className="decoration-bracket">{"}"}</span>
         </div>
       </section>
 
@@ -332,8 +373,7 @@ function HomePage() {
             <p>Find practical knowledge for your next build.</p>
           </div>
           <span className="article-count">
-            {filteredArticles.length}{" "}
-            {filteredArticles.length === 1 ? "article" : "articles"}
+            {visibleArticles.length} articles
           </span>
         </div>
 
@@ -346,14 +386,14 @@ function HomePage() {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search articles, topics or keywords..."
-              aria-label="Search articles"
+              placeholder="Search blogs and topics..."
+              aria-label="Search blogs"
             />
             {search && (
               <button
-                type="button"
                 className="clear-search"
                 onClick={() => setSearch("")}
+                type="button"
                 aria-label="Clear search"
               >
                 ×
@@ -364,8 +404,8 @@ function HomePage() {
           <label className="sort-control">
             <span>Sort by</span>
             <select
-              value={sortBy}
-              onChange={(event) => setSortBy(event.target.value)}
+              value={sort}
+              onChange={(event) => setSort(event.target.value)}
               aria-label="Sort articles"
             >
               <option value="latest">Latest</option>
@@ -376,43 +416,35 @@ function HomePage() {
         </div>
 
         <div className="category-filters" aria-label="Filter by category">
-          {topics.map((topic) => (
+          {["All", ...categories].map((item) => (
             <button
-              key={topic}
+              key={item}
               type="button"
-              className={`filter-chip ${
-                activeCategory === topic ? "active" : ""
-              }`}
-              onClick={() => setActiveCategory(topic)}
-              aria-pressed={activeCategory === topic}
+              className={`filter-chip ${category === item ? "active" : ""}`}
+              aria-pressed={category === item}
+              onClick={() => setCategory(item)}
             >
-              {topic}
+              {item}
             </button>
           ))}
         </div>
 
-        {filteredArticles.length > 0 ? (
+        {visibleArticles.length ? (
           <div className="articles-grid">
-            {filteredArticles.map((article, index) => (
-              <ArticleCard key={article.id} article={article} index={index} />
+            {visibleArticles.map((article) => (
+              <ArticleCard key={article.id} article={article} />
             ))}
           </div>
         ) : (
           <div className="empty-state">
-            <span className="empty-icon" aria-hidden="true">
-              ⌕
-            </span>
             <h3>No articles found</h3>
-            <p>
-              Try another keyword or select a different category to find what
-              you are looking for.
-            </p>
+            <p>Try a different keyword or category.</p>
             <button
-              type="button"
               className="button-primary"
+              type="button"
               onClick={clearFilters}
             >
-              Clear all filters
+              Clear filters
             </button>
           </div>
         )}
@@ -426,44 +458,31 @@ function HomePage() {
               <h2>
                 Browse by topic<span className="heading-dot">.</span>
               </h2>
-              <p>Choose a topic and discover something new.</p>
             </div>
           </div>
 
           <div className="topics-grid">
-            {topics
-              .filter((topic) => topic !== "All")
-              .map((topic, index) => {
-                const count = articles.filter(
-                  (article) => article.category === topic,
-                ).length;
-
-                return (
-                  <button
-                    type="button"
-                    className="topic-card"
-                    key={topic}
-                    onClick={() => {
-                      setActiveCategory(topic);
-                      setSearch("");
-                      document
-                        .getElementById("articles")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                  >
-                    <span className="topic-number">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="topic-name">{topic}</span>
-                    <span className="topic-count">
-                      {count} {count === 1 ? "article" : "articles"}
-                    </span>
-                    <span className="topic-arrow" aria-hidden="true">
-                      ↗
-                    </span>
-                  </button>
-                );
-              })}
+            {categories.map((item, index) => (
+              <a
+                className="topic-card"
+                key={item}
+                href="#articles"
+                onClick={() => setCategory(item)}
+              >
+                <span className="topic-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="topic-name">{item}</span>
+                <span className="topic-count">
+                  {
+                    articles.filter(
+                      (a) => a.category === item && a.status === "published",
+                    ).length
+                  }{" "}
+                  articles
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
@@ -471,20 +490,40 @@ function HomePage() {
   );
 }
 
-function ArticlePage() {
+function ArticlePage({ articles }) {
   const { articleId } = useParams();
-  const article = articles.find((item) => item.id === articleId);
+
+  const article = articles.find(
+    (item) => item.id === articleId && item.status === "published",
+  );
+
+  useEffect(() => {
+    if (!article) return;
+
+    document.title = article.seoTitle || article.title;
+    const description = article.seoDescription || article.description;
+    let meta = document.querySelector('meta[name="description"]');
+
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+
+    meta.content = description;
+
+    return () => {
+      document.title = "CodeForge Stack | Developer Blog";
+    };
+  }, [article]);
 
   if (!article) {
     return (
       <main className="not-found">
-        <span className="section-kicker">404 — ARTICLE NOT FOUND</span>
-        <h1>
-          This page doesn't exist<span className="heading-dot">.</span>
-        </h1>
-        <p>The article may have been moved or the URL may be incorrect.</p>
+        <h1>Article not found.</h1>
+        <p>This article may have been removed or is not published.</p>
         <Link className="button-primary" to="/">
-          Back to articles
+          Back home
         </Link>
       </main>
     );
@@ -492,72 +531,586 @@ function ArticlePage() {
 
   return (
     <main className="article-page">
+      <nav aria-label="Breadcrumb" className="article-breadcrumb">
+        <Link to="/">Home</Link>
+        <span aria-hidden="true">/</span>
+        <Link to="/#articles">Articles</Link>
+        <span aria-hidden="true">/</span>
+        <span>{article.category}</span>
+      </nav>
+
       <Link className="back-link" to="/#articles">
         ← Back to articles
       </Link>
 
-      <div className="article-header">
+      <header className="article-header">
         <span className="category-badge">{article.category}</span>
         <h1>{article.title}</h1>
         <p className="article-intro">{article.description}</p>
+
         <div className="article-meta">
           <span>{article.author}</span>
-          <span>
-            {new Date(`${article.date}T00:00:00`).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </span>
+          <time dateTime={article.date}>{article.date}</time>
           <span>{article.readTime}</span>
         </div>
-      </div>
+      </header>
 
-      <div className="article-body">
-        <div className="article-notice">
-          <span className="status-dot" />
-          Sample article · Full blog publishing will be added in a later module.
-        </div>
+      <ArticleContent content={article.content} />
 
-        {article.content.map((section, index) => (
-          <section key={section.heading}>
-            <h2>
-              {index + 1}. {section.heading}
-            </h2>
-            <p>{section.text}</p>
-          </section>
-        ))}
-
-        <div className="article-end">
-          <span>Enjoyed this guide?</span>
-          <Link to="/#articles">Explore more articles ↗</Link>
-        </div>
+      <div className="article-end">
+        <span>Enjoyed this guide? Explore more developer articles.</span>
+        <Link to="/#articles">Explore articles ↗</Link>
       </div>
     </main>
   );
 }
 
-function NotFoundPage() {
+function AdminLayout({ articles }) {
+  const navigate = useNavigate();
+  const published = articles.filter((a) => a.status === "published").length;
+  const drafts = articles.filter((a) => a.status === "draft").length;
+
+  function deleteArticle(id) {
+    const confirmed = window.confirm(
+      "Delete this blog permanently from this browser?",
+    );
+    if (!confirmed) return;
+
+    window.dispatchEvent(
+      new CustomEvent("codeforge-delete-article", { detail: id }),
+    );
+  }
+
   return (
-    <main className="not-found">
-      <span className="section-kicker">404 — PAGE NOT FOUND</span>
-      <h1>Lost in the code?</h1>
-      <p>Let's get you back to the knowledge hub.</p>
-      <Link className="button-primary" to="/">
-        Back to home
-      </Link>
+    <main className="admin-page">
+      <div className="admin-heading">
+        <div>
+          <span className="section-kicker">CONTENT MANAGEMENT</span>
+          <h1>
+            Admin Dashboard<span className="heading-dot">.</span>
+          </h1>
+          <p>Manage your CodeForge Stack articles.</p>
+        </div>
+        <Link className="button-primary" to="/admin/new">
+          ＋ Write new blog
+        </Link>
+      </div>
+
+      <div className="admin-stats">
+        <div className="admin-stat">
+          <span>Total blogs</span>
+          <strong>{articles.length}</strong>
+        </div>
+        <div className="admin-stat">
+          <span>Published</span>
+          <strong>{published}</strong>
+        </div>
+        <div className="admin-stat">
+          <span>Drafts</span>
+          <strong>{drafts}</strong>
+        </div>
+      </div>
+
+      <div className="admin-list-heading">
+        <h2>Your blogs</h2>
+        <span>{articles.length} total</span>
+      </div>
+
+      <div className="admin-table-wrap">
+        {articles.length === 0 ? (
+          <div className="empty-state">
+            <h3>No blogs yet</h3>
+            <Link className="button-primary" to="/admin/new">
+              Create your first blog
+            </Link>
+          </div>
+        ) : (
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Article</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {articles.map((article) => (
+                <tr key={article.id}>
+                  <td>
+                    <strong>{article.title}</strong>
+                    <small>/{article.id}</small>
+                  </td>
+                  <td>{article.category}</td>
+                  <td>
+                    <span className={`status-pill ${article.status}`}>
+                      {article.status}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="admin-actions">
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/admin/edit/${article.id}`)}
+                      >
+                        Edit
+                      </button>
+                      {article.status === "published" && (
+                        <Link to={`/articles/${article.id}`}>View</Link>
+                      )}
+                      <button
+                        className="delete-action"
+                        type="button"
+                        onClick={() => deleteArticle(article.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <p className="admin-warning">
+        Prototype mode: articles are stored in this browser only. This dashboard
+        is not protected by authentication yet.
+      </p>
     </main>
   );
 }
 
-function AppLayout() {
+function BlogEditor({ articles, saveArticle }) {
+  const { articleId } = useParams();
+  const navigate = useNavigate();
+  const existing = articleId
+    ? articles.find((article) => article.id === articleId)
+    : null;
+
+  const [form, setForm] = useState(() => ({
+    title: existing?.title ?? "",
+    slug: existing?.id ?? "",
+    description: existing?.description ?? "",
+    category: existing?.category ?? "Java",
+    content: existing?.content ?? "",
+    seoTitle: existing?.seoTitle ?? "",
+    seoDescription: existing?.seoDescription ?? "",
+  }));
+
+  const [slugEdited, setSlugEdited] = useState(Boolean(existing));
+  const [mode, setMode] = useState("write");
+  const [message, setMessage] = useState("");
+  const [savedSnapshot, setSavedSnapshot] = useState(JSON.stringify(form));
+
+  const wordCount = countWords(form.content);
+  const isDirty = JSON.stringify(form) !== savedSnapshot;
+
+  useEffect(() => {
+    function warnBeforeUnload(event) {
+      if (!isDirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", warnBeforeUnload);
+    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+  }, [isDirty]);
+
+  function update(field, value) {
+    setForm((previous) => ({
+      ...previous,
+      [field]: value,
+      ...(field === "title" && !slugEdited ? { slug: makeSlug(value) } : {}),
+      ...(field === "title" && !previous.seoTitle
+        ? { seoTitle: value.slice(0, 60) }
+        : {}),
+      ...(field === "description" && !previous.seoDescription
+        ? { seoDescription: value.slice(0, 160) }
+        : {}),
+    }));
+    setMessage("");
+  }
+
+  function leaveEditor() {
+    if (isDirty && !window.confirm("Discard your unsaved changes?")) return;
+    navigate("/admin");
+  }
+
+  function submit(status) {
+    const title = form.title.trim();
+    const description = form.description.trim();
+    const content = form.content.trim();
+    const id = makeSlug(form.slug || title);
+
+    if (!title || !description || !content) {
+      setMessage("Please complete the title, description and article content.");
+      return;
+    }
+
+    if (!id) {
+      setMessage("Please enter a valid URL slug using letters or numbers.");
+      return;
+    }
+
+    const collision = articles.some(
+      (article) => article.id === id && article.id !== existing?.id,
+    );
+
+    if (collision) {
+      setMessage("This URL slug already exists. Choose a different slug.");
+      return;
+    }
+
+    const article = {
+      id,
+      title,
+      description,
+      category: form.category,
+      content,
+      author: existing?.author || "CodeForge Author",
+      date: new Date().toISOString().slice(0, 10),
+      readTime: estimateReadTime(content),
+      views: existing?.views || 0,
+      status,
+      seoTitle: (form.seoTitle.trim() || title).slice(0, 70),
+      seoDescription: (form.seoDescription.trim() || description).slice(0, 160),
+    };
+
+    saveArticle(article);
+    setSavedSnapshot(JSON.stringify(form));
+    navigate("/admin");
+  }
+
+  return (
+    <main className="editor-page editor-page-wide">
+      <button
+        type="button"
+        className="back-link editor-back-button"
+        onClick={leaveEditor}
+      >
+        ← Back to dashboard
+      </button>
+
+      <div className="admin-heading">
+        <div>
+          <span className="section-kicker">CONTENT WORKSPACE</span>
+          <h1>
+            {existing ? "Edit blog" : "Write a blog"}
+            <span className="heading-dot">.</span>
+          </h1>
+          <p>Create a useful article for the developer community.</p>
+        </div>
+        <span className={`editor-save-indicator ${isDirty ? "unsaved" : ""}`}>
+          <span className="status-dot" />
+          {isDirty ? "Unsaved changes" : "Ready to edit"}
+        </span>
+      </div>
+
+      <form
+        className="blog-form editor-form"
+        onSubmit={(event) => event.preventDefault()}
+      >
+        <div className="editor-field-grid">
+          <label>
+            Blog title <span>*</span>
+            <input
+              required
+              maxLength={150}
+              value={form.title}
+              onChange={(event) => update("title", event.target.value)}
+              placeholder="e.g. Getting started with Spring Boot"
+            />
+            <small>{form.title.length}/150 characters</small>
+          </label>
+
+          <label>
+            Category
+            <select
+              value={form.category}
+              onChange={(event) => update("category", event.target.value)}
+            >
+              {categories.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <label>
+          URL slug <span>*</span>
+          <input
+            required
+            maxLength={100}
+            value={form.slug}
+            onChange={(event) => {
+              setSlugEdited(true);
+              update("slug", makeSlug(event.target.value));
+            }}
+            placeholder="getting-started-with-spring-boot"
+          />
+          <small>
+            Preview URL: /articles/
+            {makeSlug(form.slug || form.title) || "your-blog-slug"}
+          </small>
+        </label>
+
+        <label>
+          Short description <span>*</span>
+          <textarea
+            required
+            rows={3}
+            maxLength={300}
+            value={form.description}
+            onChange={(event) => update("description", event.target.value)}
+            placeholder="Explain what readers will learn from this article..."
+          />
+          <small>{form.description.length}/300 characters</small>
+        </label>
+
+        <div className="editor-divider" />
+
+        <div className="editor-section-heading">
+          <div>
+            <h2>Article content</h2>
+            <p>Use Markdown-style headings and fenced code blocks.</p>
+          </div>
+          <span>
+            {wordCount} words · {estimateReadTime(form.content)}
+          </span>
+        </div>
+
+        <div
+          className="editor-mode-tabs"
+          role="tablist"
+          aria-label="Editor view"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "write"}
+            className={mode === "write" ? "active" : ""}
+            onClick={() => setMode("write")}
+          >
+            Write
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "preview"}
+            className={mode === "preview" ? "active" : ""}
+            onClick={() => setMode("preview")}
+          >
+            Preview
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "split"}
+            className={mode === "split" ? "active" : ""}
+            onClick={() => setMode("split")}
+          >
+            Split view
+          </button>
+        </div>
+
+        <div className={`editor-workspace mode-${mode}`}>
+          {mode !== "preview" && (
+            <label className="editor-content-field">
+              Write your article <span>*</span>
+              <textarea
+                className="blog-content-input"
+                required
+                rows={20}
+                value={form.content}
+                onChange={(event) => update("content", event.target.value)}
+                placeholder={
+                  'Start writing here...\n\n## Your first heading\n\nExplain the concept with examples.\n\n```java\nSystem.out.println("Hello, world!");\n```'
+                }
+              />
+              <small>
+                Tip: use ## Heading, ### Subheading and triple backticks for
+                code.
+              </small>
+            </label>
+          )}
+
+          {mode !== "write" && (
+            <section className="editor-preview" aria-label="Article preview">
+              <span className="section-kicker">LIVE PREVIEW</span>
+              <h2>{form.title || "Your article title"}</h2>
+              <p className="article-intro">
+                {form.description ||
+                  "Your article description will appear here."}
+              </p>
+              <div className="article-meta">
+                <span>{existing?.author || "CodeForge Author"}</span>
+                <span>{estimateReadTime(form.content)}</span>
+              </div>
+              {form.content.trim() ? (
+                <ArticleContent content={form.content} />
+              ) : (
+                <p>
+                  Your article content preview will appear here as you type.
+                </p>
+              )}
+            </section>
+          )}
+        </div>
+
+        <div className="editor-divider" />
+
+        <div className="editor-section-heading">
+          <div>
+            <h2>SEO settings</h2>
+            <p>Set the search title and summary for this article.</p>
+          </div>
+        </div>
+
+        <label>
+          SEO title
+          <input
+            maxLength={70}
+            value={form.seoTitle}
+            onChange={(event) => update("seoTitle", event.target.value)}
+            placeholder="A clear title for search results"
+          />
+          <small>{form.seoTitle.length}/70 characters</small>
+        </label>
+
+        <label>
+          Meta description
+          <textarea
+            rows={3}
+            maxLength={160}
+            value={form.seoDescription}
+            onChange={(event) => update("seoDescription", event.target.value)}
+            placeholder="A concise summary that explains why the article is useful."
+          />
+          <small>{form.seoDescription.length}/160 characters</small>
+        </label>
+
+        <div className="seo-search-preview">
+          <span>SEARCH RESULT PREVIEW</span>
+          <strong>{form.seoTitle || form.title || "Article title"}</strong>
+          <small>
+            codeforgestack.local/articles/
+            {makeSlug(form.slug || form.title) || "your-blog-slug"}
+          </small>
+          <p>
+            {form.seoDescription ||
+              form.description ||
+              "Your article description will appear here."}
+          </p>
+        </div>
+
+        {message && (
+          <p className="editor-message" role="alert">
+            {message}
+          </p>
+        )}
+
+        <div className="editor-actions">
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={leaveEditor}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() => submit("draft")}
+          >
+            Save draft
+          </button>
+          <button
+            type="button"
+            className="button-primary"
+            onClick={() => submit("published")}
+          >
+            {existing?.status === "published"
+              ? "Update & publish"
+              : "Publish blog"}{" "}
+            ↗
+          </button>
+        </div>
+      </form>
+    </main>
+  );
+}
+
+function AppContent() {
+  const [articles, setArticles] = useState(readArticles);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+    } catch {
+      console.error(
+        "CodeForge Stack could not save articles to local storage.",
+      );
+    }
+  }, [articles]);
+
+  useEffect(() => {
+    function handleDelete(event) {
+      setArticles((current) =>
+        current.filter((article) => article.id !== event.detail),
+      );
+    }
+
+    window.addEventListener("codeforge-delete-article", handleDelete);
+    return () =>
+      window.removeEventListener("codeforge-delete-article", handleDelete);
+  }, []);
+
+  function saveArticle(article) {
+    setArticles((current) => {
+      const exists = current.some((item) => item.id === article.id);
+
+      if (exists) {
+        return current.map((item) => (item.id === article.id ? article : item));
+      }
+
+      return [article, ...current];
+    });
+  }
+
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/articles/:articleId" element={<ArticlePage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/" element={<HomePage articles={articles} />} />
+        <Route
+          path="/articles/:articleId"
+          element={<ArticlePage articles={articles} />}
+        />
+        <Route path="/admin" element={<AdminLayout articles={articles} />} />
+        <Route
+          path="/admin/new"
+          element={<BlogEditor articles={articles} saveArticle={saveArticle} />}
+        />
+        <Route
+          path="/admin/edit/:articleId"
+          element={<BlogEditor articles={articles} saveArticle={saveArticle} />}
+        />
+        <Route
+          path="*"
+          element={
+            <main className="not-found">
+              <h1>Page not found.</h1>
+              <p>The page you requested does not exist.</p>
+              <Link className="button-primary" to="/">
+                Back home
+              </Link>
+            </main>
+          }
+        />
       </Routes>
       <Footer />
     </>
@@ -567,7 +1120,7 @@ function AppLayout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppLayout />
+      <AppContent />
     </BrowserRouter>
   );
 }

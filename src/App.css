@@ -1074,3 +1074,583 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Admin dashboard */
+.admin-page,
+.editor-page {
+  width: min(var(--container-width), calc(100% - 48px));
+  min-height: 65vh;
+  margin: 0 auto;
+  padding: 58px 0 90px;
+}
+
+.admin-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.admin-heading h1 {
+  margin: 12px 0;
+  font-family: var(--font-heading);
+  font-size: clamp(32px, 5vw, 46px);
+  letter-spacing: -1.8px;
+}
+
+.admin-heading p {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 42px;
+}
+
+.admin-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 23px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.admin-stat span,
+.admin-list-heading > span {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.admin-stat strong {
+  font-family: var(--font-heading);
+  font-size: 34px;
+}
+
+.admin-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.admin-list-heading h2 {
+  font-family: var(--font-heading);
+  font-size: 22px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 17px 16px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.admin-table th {
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-table td strong,
+.admin-table td small {
+  display: block;
+}
+
+.admin-table td strong {
+  min-width: 180px;
+  line-height: 1.6;
+}
+
+.admin-table td small {
+  margin-top: 5px;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 10px;
+  text-transform: capitalize;
+}
+
+.status-pill.published {
+  color: var(--color-accent);
+  background: rgba(163, 230, 53, 0.09);
+}
+
+.status-pill.draft {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.09);
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 11px;
+}
+
+.admin-actions button,
+.admin-actions a {
+  padding: 0;
+  border: 0;
+  color: var(--color-accent);
+  background: transparent;
+  font-size: 11px;
+}
+
+.admin-actions .delete-action {
+  color: #f87171;
+}
+
+.admin-warning {
+  margin-top: 22px;
+  color: var(--color-muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+/* Blog editor */
+.editor-page {
+  max-width: 850px;
+}
+
+.editor-page .back-link {
+  margin-bottom: 30px;
+}
+
+.blog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+  padding: 27px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.blog-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.blog-form label > span {
+  display: inline;
+  color: var(--color-accent);
+}
+
+.blog-form input,
+.blog-form textarea,
+.blog-form select {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  outline: none;
+  color: var(--color-text);
+  background: #0b0b0e;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.blog-form input:focus,
+.blog-form textarea:focus,
+.blog-form select:focus {
+  border-color: rgba(163, 230, 53, 0.7);
+}
+
+.blog-form textarea {
+  resize: vertical;
+}
+
+.blog-form select option {
+  background: #111114;
+}
+
+.blog-form label small {
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.blog-content-input {
+  min-height: 260px;
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 11px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 700px) {
+  .admin-page,
+  .editor-page {
+    width: calc(100% - 32px);
+    padding-top: 36px;
+  }
+
+  .admin-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .admin-stats {
+    gap: 9px;
+  }
+
+  .admin-stat {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .admin-stat span {
+    font-size: 10px;
+  }
+
+  .admin-stat strong {
+    font-size: 27px;
+  }
+
+  .admin-table {
+    min-width: 650px;
+  }
+
+  .blog-form {
+    padding: 17px;
+  }
+
+  .editor-actions {
+    justify-content: stretch;
+  }
+
+  .editor-actions button {
+    flex: 1 1 auto;
+  }
+}
+
+/* =========================================================
+   CodeForge Stack — Enhanced Blog Editor
+   Add this section at the end of src/App.css
+========================================================= */
+
+.editor-page-wide {
+  max-width: 1100px;
+}
+
+.editor-back-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.editor-save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: var(--color-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.editor-save-indicator .status-dot {
+  width: 7px;
+  height: 7px;
+}
+
+.editor-save-indicator.unsaved .status-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+.editor-form {
+  gap: 22px;
+}
+
+.editor-field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+  gap: 18px;
+}
+
+.editor-divider {
+  height: 1px;
+  width: 100%;
+  background: var(--color-border);
+  margin: 4px 0;
+}
+
+.editor-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.editor-section-heading h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+}
+
+.editor-section-heading p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.editor-section-heading > span {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.editor-mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: #0b0b0e;
+}
+
+.editor-mode-tabs button {
+  flex: 1;
+  min-height: 36px;
+  padding: 8px 13px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--color-muted);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.editor-mode-tabs button:hover {
+  color: var(--color-text);
+}
+
+.editor-mode-tabs button.active {
+  border-color: var(--color-border);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.editor-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.editor-workspace.mode-split {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editor-content-field {
+  min-width: 0;
+}
+
+.editor-content-field .blog-content-input {
+  min-height: 470px;
+  resize: vertical;
+  tab-size: 2;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.85;
+}
+
+.editor-preview {
+  min-width: 0;
+  max-height: 720px;
+  overflow: auto;
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  background: #0b0b0e;
+}
+
+.editor-preview h2 {
+  margin: 18px 0 12px;
+  font-family: var(--font-heading);
+  font-size: clamp(23px, 3vw, 32px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.editor-preview .article-meta {
+  margin-top: 15px;
+}
+
+.editor-preview .article-body {
+  padding-top: 10px;
+}
+
+.article-body h3 {
+  margin: 25px 0 10px;
+  font-family: var(--font-heading);
+  font-size: 19px;
+}
+
+.article-code {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: #d4f6a3;
+  background: #08080a;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  white-space: pre;
+}
+
+.article-code code {
+  font-family: inherit;
+}
+
+.article-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 24px;
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.article-breadcrumb a:hover {
+  color: var(--color-accent);
+}
+
+.seo-search-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: #0b0b0e;
+}
+
+.seo-search-preview > span {
+  color: var(--color-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.seo-search-preview strong {
+  color: #a8c7fa;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.seo-search-preview small {
+  color: #c5e3c4;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.seo-search-preview p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.editor-message {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 8px;
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.06);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .editor-field-grid,
+  .editor-workspace.mode-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .editor-content-field .blog-content-input {
+    min-height: 320px;
+  }
+
+  .editor-preview {
+    max-height: none;
+  }
+
+  .editor-save-indicator {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-mode-tabs button {
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .editor-preview {
+    padding: 15px;
+  }
+
+  .seo-search-preview {
+    padding: 14px;
+  }
+}
