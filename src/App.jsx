@@ -263,9 +263,42 @@ function Footer() {
   );
 }
 
+function CoverImage({ src, alt = "", className = "" }) {
+  const imageUrl = (src || "").trim();
+  const [failedUrl, setFailedUrl] = useState("");
+
+  if (!imageUrl || failedUrl === imageUrl) {
+    return (
+      <div
+        className={`cover-image-fallback ${className}`}
+        role="img"
+        aria-label={alt || "Article cover image unavailable"}
+      >
+        <span className="cover-fallback-mark">&lt;/&gt;</span>
+        <span className="cover-fallback-text">CODEFORGE STACK</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      className={className}
+      src={imageUrl}
+      alt={alt}
+      loading="lazy"
+      onError={() => setFailedUrl(imageUrl)}
+    />
+  );
+}
+
 function ArticleCard({ article }) {
   return (
     <article className="article-card">
+      <CoverImage
+        src={article.coverImage}
+        alt={`Cover image for ${article.title}`}
+        className="article-card-cover"
+      />
       <div className="card-topline">
         <span className="category-badge">{article.category}</span>
         <span className="read-time">{article.readTime}</span>
@@ -758,6 +791,12 @@ function ArticlePage({ articles }) {
           <h1>{article.title}</h1>
           <p className="article-intro">{article.description}</p>
 
+          <CoverImage
+            src={article.coverImage}
+            alt={`Cover image for ${article.title}`}
+            className="article-detail-cover"
+          />
+
           <div className="article-meta">
             <span>{article.author}</span>
             <span>{article.date}</span>
@@ -926,6 +965,7 @@ function BlogEditor({ articles, saveArticle }) {
     title: existing?.title ?? "",
     slug: existing?.id ?? "",
     description: existing?.description ?? "",
+    coverImage: existing?.coverImage ?? "",
     category: existing?.category ?? "Java",
     content: existing?.content ?? "",
     seoTitle: existing?.seoTitle ?? "",
@@ -1000,6 +1040,7 @@ function BlogEditor({ articles, saveArticle }) {
       id,
       title,
       description,
+      coverImage: form.coverImage.trim(),
       category: form.category,
       content,
       author: existing?.author || "CodeForge Author",
@@ -1103,6 +1144,26 @@ function BlogEditor({ articles, saveArticle }) {
           />
           <small>{form.description.length}/300 characters</small>
         </label>
+
+        <label>
+          Cover image URL
+          <input
+            type="url"
+            value={form.coverImage}
+            onChange={(event) => update("coverImage", event.target.value)}
+            placeholder="https://example.com/article-cover.jpg"
+          />
+          <small>Optional. Use a publicly accessible image URL.</small>
+        </label>
+
+        <div className="cover-image-editor-preview">
+          <span className="section-kicker">COVER IMAGE PREVIEW</span>
+          <CoverImage
+            src={form.coverImage}
+            alt="Preview of your article cover"
+            className="editor-cover-preview-image"
+          />
+        </div>
 
         <div className="editor-divider" />
 
